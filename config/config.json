@@ -1,0 +1,41 @@
+{
+    "NODE_SERVER_HOSTNAME": "0.0.0.0",
+    "NODE_SERVER_PORT": 3012,
+    "BUILD_OUTPUT_PATH": "build",
+    "PUBLIC_STATIC_ASSET_PATH": "/assets/",
+    "PUBLIC_STATIC_ASSET_URL": "",
+    "API_URL": "",
+    "CLIENT_ENV_VARIABLES": [
+        "API_URL"
+    ],
+    "WEBVIEW_CONFIG": {
+        "appId": "com.catalyst.snug",
+        "appName": "Snug",
+        "LOCAL_IP": "localhost",
+        "port": "3012",
+        "appInfo": "",
+        "android": {
+            "buildType": "debug"
+        },
+        "ios": {
+            "buildType": "debug"
+        },
+        "splashScreen": {
+            "backgroundColor": "#0a0a12",
+            "minDuration": 2200,
+            "imageWidth": 144,
+            "imageHeight": 144,
+            "cornerRadius": 0
+        },
+        "edgeToEdge": {
+            "enabled": true,
+            "statusBarStyle": "auto"
+        },
+        "cachePattern": [
+            "*.js",
+            "*.css",
+            "*.woff2",
+            "*.png"
+        ]
+    }
+}

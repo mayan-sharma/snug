@@ -1,0 +1,15 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: snug
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run serve
+    healthCheckPath: /api/health
+    envVars:
+      # Catalyst listens on NODE_SERVER_PORT from config/config.json; Render routes to PORT.
+      - key: PORT
+        value: "3012"
+      - key: NODE_VERSION
+        value: "22"

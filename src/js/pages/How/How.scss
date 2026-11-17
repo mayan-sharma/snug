@@ -1,0 +1,140 @@
+.page {
+    padding-top: 6px;
+}
+
+.title {
+    font-family: var(--pixel);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-transform: uppercase;
+    color: var(--c6);
+}
+
+.rules {
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: rule;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    li {
+        counter-increment: rule;
+        display: grid;
+        grid-template-columns: 26px 1fr;
+        gap: 8px;
+        &::before {
+            content: counter(rule);
+            display: grid;
+            place-items: center;
+            width: 24px;
+            height: 24px;
+            background: var(--c6);
+            color: #0a0a12;
+            font-family: var(--pixel);
+            font-size: 9px;
+            margin-top: 1px;
+        }
+    }
+}
+
+.scoring {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 2px solid var(--hairline);
+    border-radius: var(--radius);
+    background: var(--card);
+    li {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 11px 14px;
+        font-size: 13.5px;
+        & + li {
+            border-top: 1px solid var(--hairline);
+        }
+    }
+    b {
+        font-family: var(--mono);
+        font-weight: 650;
+        white-space: nowrap;
+    }
+}
+
+.pieces {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 18px;
+    --u: 14px;
+}
+
+.h2 {
+    margin: 34px 0 12px;
+    font-family: var(--pixel);
+    font-size: 9px;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: var(--c4);
+}
+
+.lede {
+    color: var(--muted);
+    font-size: 13.5px;
+}
+
+.hood {
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+    border: 2px solid var(--hairline);
+    border-radius: var(--radius);
+    background: var(--card);
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    & + & {
+        border-top: 1px solid var(--hairline);
+    }
+}
+
+.feature {
+    display: flex;
+    flex-direction: column;
+    strong {
+        font-weight: 650;
+        font-size: 15px;
+    }
+    code {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+    }
+}
+
+.state {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-align: right;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    &::before {
+        content: "";
+        flex: none;
+        width: 7px;
+        height: 7px;
+        background: var(--hairline);
+    }
+    &[data-on]::before {
+        background: var(--right);
+    }
+}

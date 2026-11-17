@@ -1,0 +1,102 @@
+@font-face {
+    font-family: "Pixel Snug";
+    src: url("../../fonts/press-start-2p.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Mono Snug";
+    src: url("../../fonts/jetbrains-mono.woff2") format("woff2");
+    font-weight: 100 800;
+    font-display: swap;
+}
+
+// One look, day or night: an arcade cabinet. Hard edges, flat neon, pixel
+// type, no blur and no rounded corners anywhere.
+:root {
+    color-scheme: dark;
+    --paper: #0a0a12;
+    --card: #12121f;
+    --ink: #f4f4e8;
+    --muted: #8d8fa8;
+    --hairline: #2b2c44;
+    --well: #05050b;
+    --slot: #10101c;
+    // Block colours, one per shape family.
+    --c1: #ff4d6d;
+    --c2: #ff9f1c;
+    --c3: #3ddc84;
+    --c4: #2de2e6;
+    --c5: #b47cff;
+    --c6: #ffd60a;
+    // Names the shared page styles still use.
+    --up: var(--c1);
+    --left: var(--c2);
+    --right: var(--c3);
+    --down: var(--c4);
+    --bad: var(--c1);
+    --good: var(--c3);
+    --pixel: "Pixel Snug", "Mono Snug", ui-monospace, monospace;
+    --mono: "Mono Snug", ui-monospace, "SF Mono", Menlo, monospace;
+    --sans: var(--mono);
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --radius: 0px;
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    background: var(--paper);
+}
+
+body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+}
+
+a {
+    color: inherit;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+    margin: 0;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+// The web fallback for useNativeTransition fades this overlay colour.
+:root {
+    --transition-overlay-color: var(--paper);
+}

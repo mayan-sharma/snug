@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Snug</title>
+<style>
+  /* --ink must equal WEBVIEW_CONFIG.splashScreen.backgroundColor. The native build injects it as
+     window.__CATALYST_SPLASH__; this value is the fallback for a page opened on its own. */
+  :root {
+    --ink: #0a0a12;
+    --t0: 420ms;
+    --ease: cubic-bezier(0.23, 1, 0.32, 1);
+    --launch: cubic-bezier(0.4, 0, 0.9, 0.5);
+  }
+  /* Transparent until placed: the identical native image (public/android|ios/splashscreen.png, 144px) shows
+     through, so the handoff is invisible. Frame 0 here is that image. */
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+  .ready, .ready body { background: var(--ink); }
+  #mark { position: fixed; width: 144px; height: 144px; margin: -72px 0 0 -72px; visibility: hidden; }
+  .ready #mark { visibility: visible; }
+  html:not(.go) * { animation-play-state: paused !important; }
+  .tile { position: absolute; width: 66px; height: 66px; }
+  .tile { box-shadow: inset 7px 7px 0 rgba(255, 255, 255, 0.42), inset -7px -7px 0 rgba(0, 0, 0, 0.34); }
+  .a { left: 0; top: 0; background: #ff4d6d; }
+  .b { left: 0; top: 78px; background: #ff4d6d; }
+  .c { left: 78px; top: 78px; background: #ff4d6d; }
+  .p { left: 78px; top: 0; background: #2de2e6; }
+
+  /* The blue block lifts out of the gap, drops back in, and the corner piece gives a little under it */
+  .p { animation: lift 360ms steps(4, jump-none) calc(var(--t0) + 0ms) both, drop 240ms steps(4, jump-none) calc(var(--t0) + 700ms) forwards; }
+  .a, .b, .c { animation: give 240ms steps(2, jump-none) calc(var(--t0) + 940ms) both; }
+  @keyframes lift { to { transform: translate(0, -108px); } }
+  @keyframes drop { from { transform: translate(0, -108px); } to { transform: none; } }
+  @keyframes give { 0% { transform: none; } 50% { transform: translateY(6px); } 100% { transform: none; } }
+
+  #word { position: fixed; left: 0; right: 0; text-align: center; visibility: hidden; color: #ffd60a;
+    font: 700 30px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 0.3em; text-indent: 0.3em; text-transform: uppercase; }
+  #word small { display: block; margin-top: 12px; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-indent: 0; color: #8d8fa8; }
+  .ready #word { visibility: visible; }
+  #word { animation: rise 300ms steps(3, jump-none) calc(var(--t0) + 1150ms) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+
+  @media (prefers-reduced-motion: reduce) { .tile { animation: none !important; } #word { animation-duration: 1ms; } }
+</style>
+</head>
+<body>
+<div id="mark">
+  <div class="tile a"></div>
+  <div class="tile b"></div>
+  <div class="tile c"></div>
+  <div class="tile p"></div>
+</div>
+<div id="word">Snug<small>Fit the blocks. Clear the lines.</small></div>
+<script>
+(function () {
+  var cfg = window.__CATALYST_SPLASH__;
+  if (cfg && cfg.backgroundColor) document.documentElement.style.setProperty('--ink', cfg.backgroundColor);
+  var IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  var probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;visibility:hidden;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
+  document.body.appendChild(probe);
+  function insets() { var cs = getComputedStyle(probe); return [parseFloat(cs.paddingTop) || 0, parseFloat(cs.paddingBottom) || 0]; }
+  function start() {
+    var DPR = window.devicePixelRatio || 1;
+    var ins = IOS ? insets() : [0, 0];
+    /* Centre exactly where the native image sits, snapped to device pixels */
+    var ox = Math.round(window.innerWidth / 2 * DPR) / DPR;
+    var oy = Math.round((window.innerHeight + ins[0] - ins[1]) / 2 * DPR) / DPR;
+    var mark = document.getElementById('mark');
+    mark.style.left = ox + 'px'; mark.style.top = oy + 'px';
+    document.getElementById('word').style.top = oy + 104 + 'px';
+    var html = document.documentElement;
+    /* Android keeps the WebView at alpha 0 until onPageFinished, so hold frame 0 a little longer there */
+    html.style.setProperty('--t0', IOS ? '160ms' : '420ms');
+    html.classList.add('ready');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { html.classList.add('go'); }); });
+  }
+  if (!IOS) { if (document.readyState === 'complete') start(); else window.addEventListener('load', start); return; }
+  var since = Date.now();
+  (function wait() { if (insets()[0] > 0 || Date.now() - since > 900) start(); else setTimeout(wait, 16); })();
+})();
+</script>
+</body>
+</html>

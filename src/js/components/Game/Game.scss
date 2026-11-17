@@ -1,0 +1,454 @@
+.game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding-top: 4px;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    // The board and the tray share one width. Everything else on the screen
+    // (header, score, gaps, tip, tab bar, safe areas) takes about 296px, and
+    // the tray is 0.3 of the board tall, so the board gets what is left / 1.3.
+    --board: min(100%, max(160px, calc((100dvh - 296px - var(--pad-top, 0px) - var(--pad-bottom, 0px)) / 1.3)));
+}
+
+// ---- Score row: an arcade marquee --------------------------------------
+.hud {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.scoreBox,
+.bestBox {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-family: var(--pixel);
+    font-size: 8px;
+    text-transform: uppercase;
+    color: var(--c1);
+}
+
+.bestBox .label {
+    color: var(--c4);
+}
+
+.score {
+    font-family: var(--pixel);
+    font-size: 24px;
+    line-height: 1;
+    animation: flash 220ms steps(2, jump-none);
+}
+
+@keyframes flash {
+    from {
+        color: var(--c6);
+    }
+}
+
+.side {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.best {
+    font-family: var(--pixel);
+    font-size: 12px;
+    line-height: 1;
+    color: var(--muted);
+}
+
+.streak {
+    position: absolute;
+    right: -6px;
+    top: -12px;
+    z-index: 3;
+    padding: 6px 7px;
+    border: 2px solid #0a0a12;
+    background: var(--c6);
+    color: #0a0a12;
+    font-family: var(--pixel);
+    font-size: 8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    animation: blinkIn 360ms steps(3, jump-none);
+}
+
+@keyframes blinkIn {
+    0%,
+    66% {
+        background: var(--ink);
+    }
+    33% {
+        background: var(--c6);
+    }
+}
+
+.tools {
+    display: flex;
+    gap: 8px;
+}
+
+.iconButton {
+    display: grid;
+    place-items: center;
+    min-width: 40px;
+    height: 38px;
+    padding: 0 8px;
+    border: 2px solid var(--ink);
+    background: var(--card);
+    box-shadow: 0 3px 0 var(--ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &:active {
+        transform: translateY(3px);
+        box-shadow: none;
+    }
+
+    span {
+        font-family: var(--pixel);
+        font-size: 8px;
+        text-transform: uppercase;
+    }
+}
+
+.confirm {
+    background: var(--c1);
+    color: #0a0a12;
+}
+
+// ---- Board -------------------------------------------------------------
+.boardWrap {
+    position: relative;
+    width: var(--board);
+}
+
+.board {
+    position: relative;
+    aspect-ratio: 1;
+    border: 3px solid var(--ink);
+    background: var(--well);
+    box-shadow: 6px 6px 0 var(--c5);
+    container-type: inline-size;
+    --u: calc(100cqw / 8);
+}
+
+.grid,
+.fxLayer {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+}
+
+.fxLayer {
+    pointer-events: none;
+}
+
+.cell {
+    position: relative;
+
+    // The empty socket: a dark square, so the gaps read as grid lines.
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 1px;
+        background: var(--slot);
+    }
+}
+
+.fill {
+    position: absolute;
+    inset: 0;
+}
+
+.pop {
+    animation: pop 160ms steps(2, jump-none);
+}
+
+@keyframes pop {
+    from {
+        filter: brightness(2.2) saturate(0.3);
+    }
+}
+
+// Where the held piece will land: an outline, not a faded block.
+.ghost {
+    background: transparent;
+    box-shadow: inset 0 0 0 calc(var(--u) * 0.1) var(--c);
+    &::after {
+        display: none;
+    }
+}
+
+// A line that will clear turns the colour of the held piece and blinks.
+.cell[data-glow] .fill {
+    background: var(--c);
+    box-shadow:
+        inset calc(var(--u) * 0.11) calc(var(--u) * 0.11) 0 rgba(255, 255, 255, 0.42),
+        inset calc(var(--u) * -0.11) calc(var(--u) * -0.11) 0 rgba(0, 0, 0, 0.34);
+    animation: glow 420ms steps(2, jump-none) infinite;
+}
+
+@keyframes glow {
+    50% {
+        filter: brightness(1.5);
+    }
+}
+
+// Cleared blocks blink white twice and are gone, rippling out from the piece.
+.vanish {
+    animation: vanish 300ms step-end var(--d) both;
+}
+
+@keyframes vanish {
+    0%,
+    50% {
+        background: var(--ink);
+        box-shadow: none;
+    }
+    25%,
+    75% {
+        background: var(--c);
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.gain {
+    position: absolute;
+    left: clamp(22%, var(--gx), 78%);
+    top: clamp(14%, var(--gy), 88%);
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    animation: rise 900ms steps(9, jump-none) both;
+
+    strong {
+        font-family: var(--pixel);
+        font-size: clamp(16px, 6cqw, 26px);
+        font-weight: 400;
+        line-height: 1;
+        color: var(--c6);
+        text-shadow:
+            3px 3px 0 #000,
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000;
+    }
+
+    span {
+        padding: 4px 6px;
+        background: var(--ink);
+        color: #0a0a12;
+        font-family: var(--pixel);
+        font-size: 8px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+}
+
+@keyframes rise {
+    0% {
+        transform: translate(-50%, -50%);
+    }
+    70% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -160%);
+    }
+}
+
+// Game over: the blocks switch off in a diagonal sweep.
+.board[data-over] .fill {
+    animation: off 1ms steps(1) calc(var(--i) * 40ms) both;
+}
+
+@keyframes off {
+    to {
+        background: #3a3b52;
+    }
+}
+
+.sheet {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(5, 5, 11, 0.84);
+    text-align: center;
+    animation: sheet 300ms steps(3, jump-none) both;
+}
+
+@keyframes sheet {
+    from {
+        opacity: 0;
+    }
+}
+
+.sheetKicker {
+    font-family: var(--pixel);
+    font-size: clamp(14px, 5.6cqw, 22px);
+    text-transform: uppercase;
+    color: var(--c1);
+    animation: kicker 1s steps(2, jump-none) infinite;
+
+    &[data-best] {
+        color: var(--c6);
+    }
+}
+
+@keyframes kicker {
+    50% {
+        opacity: 0.25;
+    }
+}
+
+.sheetScore {
+    font-family: var(--pixel);
+    font-size: clamp(26px, 11cqw, 44px);
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.sheetMeta {
+    color: var(--muted);
+    font-size: 12.5px;
+}
+
+.sheetActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.primary,
+.secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 12px;
+    border: 2px solid var(--ink);
+    font-family: var(--pixel);
+    font-size: 9px;
+    text-transform: uppercase;
+    box-shadow: 0 3px 0 var(--ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &:active {
+        transform: translateY(3px);
+        box-shadow: none;
+    }
+}
+
+.primary {
+    background: var(--c6);
+    color: #0a0a12;
+}
+
+.secondary {
+    background: var(--card);
+}
+
+// ---- Tray --------------------------------------------------------------
+.tray {
+    width: var(--board);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.slot {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1.12;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: grab;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    container-type: inline-size;
+    --u: calc(100cqw / 5.25);
+
+    > span {
+        animation: dealt 240ms steps(3, jump-none) calc(var(--i) * 80ms) both;
+    }
+
+    &:disabled {
+        cursor: default;
+    }
+
+    &[data-stuck] > span {
+        filter: grayscale(1) brightness(0.55);
+    }
+
+    &[data-lifted] > span {
+        opacity: 0;
+    }
+}
+
+.tray[data-over] .slot > span {
+    filter: grayscale(1) brightness(0.45);
+}
+
+@keyframes dealt {
+    from {
+        opacity: 0;
+        transform: translateY(40%);
+    }
+}
+
+// The copy of the piece that follows the pointer, at board size.
+.float {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 20;
+    pointer-events: none;
+    will-change: transform;
+    filter: drop-shadow(5px 5px 0 rgba(0, 0, 0, 0.55));
+
+    // Over a legal spot the outline on the board does the talking.
+    &[data-snapped] > span {
+        opacity: 0.6;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .score,
+    .pop,
+    .streak,
+    .sheetKicker,
+    .cell[data-glow] .fill,
+    .slot > span {
+        animation: none;
+    }
+}

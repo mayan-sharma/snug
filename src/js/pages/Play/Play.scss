@@ -1,0 +1,14 @@
+.tip {
+    margin-top: 14px;
+    text-align: center;
+    text-wrap: balance;
+    color: var(--muted);
+    font-size: 12.5px;
+}
+
+.skeleton {
+    aspect-ratio: 1;
+    margin-top: 80px;
+    border: 3px solid var(--hairline);
+    background: var(--well);
+}
