@@ -2,6 +2,8 @@
 
 An endless block-fitting game built with [Catalyst](https://catalyst.1mg.com). Drag pieces onto an 8×8 board, fill a row or a column to clear it, and keep going until nothing in the tray fits.
 
+**Play it: https://snug-8l17.onrender.com**
+
 One codebase ships as a server-rendered website, an installable offline web app, and Android and iOS apps.
 
 ```bash
